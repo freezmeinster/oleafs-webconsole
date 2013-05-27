@@ -124,8 +124,11 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'suit',
     'django.contrib.admin',
     'south',
+    'cloud',
+    'support'
     
 )
 
@@ -156,4 +159,8 @@ LOGGING = {
             'propagate': True,
         },
     }
+}
+
+SUIT_CONFIG = {
+
 }
