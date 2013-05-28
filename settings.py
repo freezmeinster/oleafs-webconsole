@@ -1,5 +1,7 @@
 # Django settings for oleafs project.
 import sys,os
+import djcelery
+djcelery.setup_loader()
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0,os.path.join(PROJECT_ROOT,"apps"))
@@ -49,7 +51,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.join(PROJECT_ROOT,"assets/user/")
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -60,7 +62,6 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -128,7 +129,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'south',
     'cloud',
-    'support'
+    'support',
+    'djcelery'
     
 )
 
@@ -161,6 +163,48 @@ LOGGING = {
     }
 }
 
-SUIT_CONFIG = {
+CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 
+# Django Suit configuration example
+SUIT_CONFIG = {
+    'ADMIN_NAME': 'Tenriola Cloud Operation',
+
+  
+    'SEARCH_URL': '/admin/cloud/cloud/',
+    'MENU_ICONS': {
+        'sites': 'icon-leaf',
+        'auth': 'icon-lock',
+    },
+    # 'MENU_OPEN_FIRST_CHILD': True, # Default True
+    'MENU': (
+
+        # Keep original label and models
+        'sites',
+
+        # Rename app and set icon
+        {'app': 'auth', 'label': 'Authorization', 'icon':'icon-lock'},
+
+        # Reorder app models
+        {'app': 'auth', 'models': ('user', 'group')},
+
+        # Custom app, with models
+        {'label': 'Settings', 'icon':'icon-cog', 'models': ('auth.user', 'auth.group')},
+
+        # Cross-linked models with custom name; Hide default icon
+        {'label': 'Custom', 'icon':None, 'models': (
+            'auth.group',
+            {'model': 'auth.user', 'label': 'Staff'}
+        )},
+
+        # Custom app, no models (child links)
+        {'label': 'Users', 'url': 'auth.user', 'icon':'icon-user'},
+
+        # Separator
+        '-',
+
+        # Custom app and model with permissions
+        {'label': 'Secure', 'permissions': 'auth.add_user', 'models': [
+            {'label': 'custom-child', 'permissions': ('auth.add_user', 'auth.add_group')}
+        ]},
+    )
 }
